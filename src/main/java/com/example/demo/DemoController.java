@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller // 컨트롤러 어노테이션 명시
 public class DemoController{
 
-    @GetMapping("/")            // ✅ 추가
+    @GetMapping("/")            //  추가
     public String index() {
         return "index";  
     }
@@ -24,6 +24,12 @@ return "hello"; // hello.html 연결
         model.addAttribute("today", "오늘");
         model.addAttribute("weather", "날씨는");
         model.addAttribute("status", "매우 좋습니다.");
-        return "hello2"; // hello2.html
-    }
+        return "hello2";}// hello2.html
+
+        @GetMapping("/about_detailed")
+public String about() {
+return "about_detailed";
+}
+
+    
 }
