@@ -123,4 +123,28 @@
 
     
 })(jQuery);
+// confirmClose 함수 정의
+function confirmClose(e) {
+  if (e) e.preventDefault();
 
+  const ok = window.confirm("정말 창을 닫으시겠습니까?");
+  if (!ok) return false;
+
+  try { window.close(); } catch (err) {}
+
+  setTimeout(function () {
+    if (history.length > 1) {
+      history.back();
+    } else {
+      location.href = "/";
+    }
+  }, 100);
+
+  return false;
+}
+
+// 버튼에 이벤트 연결
+document.addEventListener("DOMContentLoaded", function () {
+  const btn = document.getElementById("btn-close");
+  if (btn) btn.addEventListener("click", confirmClose);
+});
