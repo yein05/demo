@@ -3,6 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.model.domain.TestDB;
 import com.example.demo.model.service.TestService;
 
+import java.util.List;
+import java.util.ArrayList;
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,13 +53,25 @@ return "thymeleaf_test1";
 // 클래스 하단 작성
 @Autowired
 TestService testService; // DemoController 클래스 아래 객체 생성
-// 하단에 맵핑 이어서 추가
+
 @GetMapping("/testdb")
 public String getAllTestDBs(Model model) {
-TestDB test = testService.findByName("홍길동");
-model.addAttribute("data4", test);
-System.out.println("데이터 출력 디버그 : " + test);
-return "testdb";
+    List<TestDB> testList = new ArrayList<>();
+
+    // DB에 있는 이름 그대로 넣어야 함
+    TestDB user1 = testService.findByName("홍길동");
+    TestDB user2 = testService.findByName("아저씨");
+    TestDB user3 = testService.findByName("꾸러기");
+
+    if(user1 != null) testList.add(user1);
+    if(user2 != null) testList.add(user2);
+    if(user3 != null) testList.add(user3);
+
+    model.addAttribute("dataList", testList);
+    model.addAttribute("user2", user2);
+    model.addAttribute("user3", user3);
+    
+    return "testdb";
 }
 
     
