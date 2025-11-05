@@ -1,45 +1,16 @@
-// package com.example.demo.controller;
-
-// import com.example.demo.model.service.BlogService;
-// import com.example.demo.model.service.AddArticleRequest;
-// import lombok.RequiredArgsConstructor;
-// import org.springframework.stereotype.Controller;
-// import org.springframework.ui.Model;
-// import org.springframework.web.bind.annotation.GetMapping;
-// //import org.springframework.web.bind.annotation.PathVariable;
-// import org.springframework.web.bind.annotation.PostMapping;
-
-// @RequiredArgsConstructor
-// @Controller
-// public class BlogController {
-
-//     private final BlogService blogService;
-
-    
-//     @GetMapping({ "/article_list"})
-//     public String list(Model model) {
-//         model.addAttribute("articles", blogService.findAll());
-//         return "article_list";  // templates/article_list.html 렌더링
-//     }
-
-  
-//     @PostMapping("/article_write")
-//     public String write(AddArticleRequest request) {
-//         blogService.save(request);      // 게시글 저장
-//         return "redirect:/article_list"; // 저장 후 목록으로 자동 이동
-//     }
-
-// }
-// BlogController.java
 package com.example.demo.controller;
 
+import java.util.List;
 import com.example.demo.model.service.BlogService;
 import com.example.demo.model.service.AddArticleRequest;
-//import com.example.demo.model.domain.Article; // 필요시
+import com.example.demo.model.domain.Board; 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.Optional;
+
+
 
 @RequiredArgsConstructor
 @Controller
@@ -52,6 +23,15 @@ public class BlogController {
     public String list(Model model) {
         model.addAttribute("articles", blogService.findAll());
         return "article_list";  // templates/article_list.html
+    }
+
+
+
+     @GetMapping("/board_list") // 새로운 게시판 링크 지정
+    public String board_list(Model model) {
+        List<Board> list = blogService.findAll(); // 게시판 전체 리스트, 기존 Article에서 Board로 변경됨
+         model.addAttribute("boards", list); // 모델에 추가
+        return "board_list"; // .HTML 연결
     }
 
     // ✅ 수정 폼 열기 (이게 없어서 404 났던 것)
@@ -85,4 +65,18 @@ public class BlogController {
         blogService.delete(id);
         return "redirect:/article_list";
     }
+
+    @GetMapping("/board_view/{id}")
+public String board_view(Model model, @PathVariable Long id) {
+    Optional<Board> list = blogService.findById(id);
+    if (list.isPresent()) {
+        model.addAttribute("boards", list.get()); // 단일 객체 바인딩
+    } else {
+        return "/error_page/article_error"; // 임시 에러 페이지
+    }
+    return "board_view";
+}
+
+
+   
 }
