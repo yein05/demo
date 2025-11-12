@@ -6,12 +6,14 @@ import com.example.demo.model.service.BlogService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+//import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+//import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -19,8 +21,6 @@ import java.util.Optional;
 public class BlogController {
 
     private final BlogService blogService;
-
-    
 
     // // 게시글 목록
     // @GetMapping("/article_list")
@@ -61,6 +61,12 @@ public class BlogController {
         return "redirect:/article_list";
     }
 
+    // 삭제
+    @PostMapping("/api/board_delete/{id}")
+    public String deleteBoard(@PathVariable Long id) {
+        blogService.delete(id);
+        return "redirect:/board_list";    // ✅ 삭제 후 목록으로 이동
+    }
 
     // //게시판 목록
     // @GetMapping("/board_list")
@@ -76,29 +82,43 @@ public class BlogController {
         return "board_write";
     }
 
-   // 글쓰기 게시판 저장
-    @PostMapping("/api/boards") 
+    // 글쓰기 게시판 저장
+    @PostMapping("/api/boards")
     public String addboards(@ModelAttribute AddArticleRequest request) {
-    blogService.save(request);
-    return "redirect:/board_list"; // .HTML 연결
+        blogService.save(request);
+        return "redirect:/board_list"; // .HTML 연결
     }
 
+    // @GetMapping("/board_list") // 새로운 게시판 링크 지정
+    // public String board_list(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String keyword) {
+    // PageRequest pageable = PageRequest.of(page, 3); // 한 페이지의 게시글 수
+    // Pageable pageable = PageRequest.of(page, pageSize);
 
-    @GetMapping("/board_list") // 새로운 게시판 링크 지정
-    public String board_list(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String keyword) {
-    PageRequest pageable = PageRequest.of(page, 3); // 한 페이지의 게시글 수
-    Page<Board> list; // Page를 반환
-    if (keyword.isEmpty()) {
-        list = blogService.findAll(pageable); // 기본 전체 출력(키워드 x)
+    @GetMapping("/board_list")
+    public String board_list(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "") String keyword
+    ) {
+        int pageSize = 3; // 한 페이지당 글 수
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        Page<Board> list; // Page를 반환
+        if (keyword.isEmpty()) {
+            list = blogService.findAll(pageable); // 기본 전체 출력(키워드 x)
         } else {
-        list = blogService.searchByKeyword(keyword, pageable); // 키워드로 검색
+            list = blogService.searchByKeyword(keyword, pageable); // 키워드로 검색
         }
+
+        int startNum = page * pageSize + 1;
+        model.addAttribute("startNum", startNum);
+
         model.addAttribute("boards", list); // 모델에 추가
         model.addAttribute("totalPages", list.getTotalPages()); // 페이지 크기
         model.addAttribute("currentPage", page); // 페이지 번호
         model.addAttribute("keyword", keyword); // 키워드
-    return "board_list"; // .HTML 연결
-}
+        return "board_list"; // .HTML 연결
+    }
 
     // 게시판 글 상세보기
     @GetMapping("/board_view/{id}")
@@ -111,6 +131,4 @@ public class BlogController {
         }
         return "board_view";
     }
-
 }
-
