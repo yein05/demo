@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.model.domain.Board;
 import com.example.demo.model.service.AddArticleRequest;
 import com.example.demo.model.service.BlogService;
+
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -61,20 +63,12 @@ public class BlogController {
         return "redirect:/article_list";
     }
 
-    // 삭제
+    // 삭제 (게시판 글 삭제)
     @PostMapping("/api/board_delete/{id}")
     public String deleteBoard(@PathVariable Long id) {
         blogService.delete(id);
-        return "redirect:/board_list";    // ✅ 삭제 후 목록으로 이동
+        return "redirect:/board_list";    // 삭제 후 목록으로 이동
     }
-
-    // //게시판 목록
-    // @GetMapping("/board_list")
-    // public String boardList(Model model) {
-    //     List<Board> list = blogService.findAll();
-    //     model.addAttribute("boards", list);
-    //     return "board_list";
-    // }
 
     // 게시판 글쓰기 페이지
     @GetMapping("/board_write")
@@ -89,17 +83,27 @@ public class BlogController {
         return "redirect:/board_list"; // .HTML 연결
     }
 
-    // @GetMapping("/board_list") // 새로운 게시판 링크 지정
-    // public String board_list(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String keyword) {
-    // PageRequest pageable = PageRequest.of(page, 3); // 한 페이지의 게시글 수
-    // Pageable pageable = PageRequest.of(page, pageSize);
-
+    // 게시판 목록 (세션 체크 + 페이징 + 검색)
     @GetMapping("/board_list")
     public String board_list(
             Model model,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "") String keyword
-    ) {
+            @RequestParam(defaultValue = "") String keyword,
+            HttpSession session) { // 세션 객체 전달
+
+        // ✅ 세션에서 userId 확인
+        // String userId = (String) session.getAttribute("userId");
+        // String email = (String) session.getAttribute("email"); // 세션에서 이메일 확인
+        Long userId = (Long) session.getAttribute("userId");
+        String email = (String) session.getAttribute("email");
+
+
+        if (userId == null) {
+            return "redirect:/member_login"; // 로그인 페이지로 리다이렉션
+        }
+
+        System.out.println("세션 userId: " + userId); // 서버 IDE 터미널에 세션 값 출력
+
         int pageSize = 3; // 한 페이지당 글 수
         Pageable pageable = PageRequest.of(page, pageSize);
 
@@ -112,11 +116,15 @@ public class BlogController {
 
         int startNum = page * pageSize + 1;
         model.addAttribute("startNum", startNum);
+        model.addAttribute("email", email); // 로그인 사용자(이메일)
 
-        model.addAttribute("boards", list); // 모델에 추가
-        model.addAttribute("totalPages", list.getTotalPages()); // 페이지 크기
-        model.addAttribute("currentPage", page); // 페이지 번호
-        model.addAttribute("keyword", keyword); // 키워드
+
+        
+        model.addAttribute("boards", list.getContent());
+        model.addAttribute("totalPages", list.getTotalPages()); // 전체 페이지 수
+        model.addAttribute("currentPage", page);                // 현재 페이지 번호
+        model.addAttribute("keyword", keyword);                 // 검색 키워드
+
         return "board_list"; // .HTML 연결
     }
 

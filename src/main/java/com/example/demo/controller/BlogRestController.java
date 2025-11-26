@@ -10,14 +10,7 @@
    @RequiredArgsConstructor
    @RestController // @Controller+@ResponseBody
    public class BlogRestController{
-   //private final BlogService blogService;이거고침
- 
-//    @PostMapping("/api/articles") // post 요청
-//   public ResponseEntity<Article> addArticle(@ModelAttribute AddArticleRequest request) { // 아직없음(에러)
-//   Article saveArticle= blogService.save(request); // 게시글저장
-//   return ResponseEntity.status(HttpStatus.CREATED) // 상태코드및게시글정보반환
-//     .body(saveArticle);
-//    }
+  
 
     @GetMapping("/favicon.ico")
    public void favicon() {
