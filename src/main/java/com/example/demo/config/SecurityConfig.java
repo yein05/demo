@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+//import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration            // 스프링 설정 클래스
 @EnableWebSecurity        // 스프링 시큐리티 활성화
@@ -27,9 +27,10 @@ public class SecurityConfig {
             )
 
             // CSRF 기본 설정 (폼 전송 사용 시 유지)
-            .csrf(withDefaults())
-
-            // 세션 관리
+            // .csrf(withDefaults())
+            .csrf(csrf -> csrf.disable())
+                // .ignoringAntMatchers("/upload-email") // 특정 경로는 CSRF 보호 제외
+                // )
             .sessionManagement(session -> session
                 .invalidSessionUrl("/session-expired")  // 세션 만료 시 이동 페이지
                 .maximumSessions(1)                     // 사용자당 최대 세션 수
