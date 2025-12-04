@@ -29,7 +29,9 @@ public class BlogController {
     }
 
     @PostMapping("/api/boards")
-    public String addboards(@ModelAttribute AddArticleRequest request) {
+    public String addboards(@ModelAttribute AddArticleRequest request, HttpSession session) {
+        String email = (String) session.getAttribute("email");
+        request.setUser(email);
         blogService.save(request);
         return "redirect:/board_list";
     }
@@ -72,10 +74,12 @@ public class BlogController {
     }
 
     @GetMapping("/board_view/{id}")
-    public String boardView(Model model, @PathVariable Long id) {
+    public String boardView(Model model, @PathVariable Long id, HttpSession session) {
         Optional<Board> board = blogService.findById(id);
         if (board.isPresent()) {
             model.addAttribute("boards", board.get());
+            String loginEmail= (String) session.getAttribute("email");
+            model.addAttribute("loginEmail", loginEmail);
             return "board_view";
         } else {
             return "/error_page/article_error";

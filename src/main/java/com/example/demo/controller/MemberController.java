@@ -67,6 +67,10 @@ public class MemberController {
 
         return "redirect:/member_login";
     }
+    @GetMapping("/session-expired")
+            public String sessionExpired() {
+                return "session-expired";
+    }
 
     // 로그인 체크
     @PostMapping("/api/login_check")

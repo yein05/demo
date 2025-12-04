@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>파일 업로드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="container py-5">
+
+<h2>파일 2개 업로드</h2>
+
+<form action="/file_upload" method="post" enctype="multipart/form-data" class="mt-4">
+
+    <div class="form-group">
+        <label>파일 1</label>
+        <input type="file" name="file1" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label>파일 2</label>
+        <input type="file" name="file2" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">업로드</button>
+</form>
+
+</body>
+</html>
